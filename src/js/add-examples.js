@@ -20,6 +20,13 @@ const examples = {
               `<option value="${example}">${window.es7Example[example].display}</option>`;
         }
       }
+
+			for (example in window.es8Example) { //eslint-disable-line
+        if (Object.prototype.hasOwnProperty.call(window.es8Example, example)) {
+          el.innerHTML +=
+              `<option value="${example}">${window.es8Example[example].display}</option>`;
+        }
+      }
     }
     return undefined;
   },
