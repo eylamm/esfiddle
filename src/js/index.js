@@ -7,6 +7,7 @@ import layoutFunctions from './layoutFunctions';
 import clickEvents from './clickEvents';
 import drag from './drag';
 import examples from './add-examples';
+import ecmaScriptVersions from './add-es-versions';
 import $ from './helpers';
 import share from './share';
 import snackbar from './snackbar';
@@ -27,8 +28,26 @@ analytics.start();
 redirectTraffic.register();
 
 window.embedded = embedded;
+
+// handle the examples according to ES versions
+console.log('getting element');
+
+window.esVersionSelector = $.getElement('.es-versions');
+console.log(window.esVersionSelector);
+
+ecmaScriptVersions.addVersions();
+
+console.log(window.esVersionSelector);
+
+window.esVersionSelector.onchange = () => {
+  console.log('changed');
+  examples.addExamples(window.esVersionSelector.value);
+  console.log(window.esVersionSelector.value);
+};
+
+console.log(window.esVersionSelector);
+
 window.exampleSelector = $.getElement('.examples');
-examples.addExamples();
 
 // check to see if the share button should be shown
 if (fiddleId && !embedded) {

@@ -30,7 +30,7 @@
       },
       browserify: {
         prod: {
-          src: ['src/js/examples/*.js', 'src/js/index.js'],
+          src: ['src/js/es-versions/*.js', 'src/js/examples/*.js', 'src/js/index.js'],
           dest: 'dist/src/es6-fiddle.js',
           options: {
             browserifyOptions: { debug: true },
