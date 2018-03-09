@@ -8,6 +8,7 @@ import clickEvents from './clickEvents';
 import drag from './drag';
 import examples from './add-examples';
 import ecmaScriptVersions from './add-es-versions';
+import libraries from './add-libraries';
 import $ from './helpers';
 import share from './share';
 import snackbar from './snackbar';
@@ -48,6 +49,12 @@ window.esVersionSelector.onchange = () => {
 console.log(window.esVersionSelector);
 
 window.exampleSelector = $.getElement('.examples');
+
+// Initialize the libraries that are loaded
+window.loadedLibraries = [];
+window.librariesSelector = $.getElement('.libraries');
+window.librariesContent = $.getElement('.libraries-list-content');
+libraries.addLibraries();
 
 // check to see if the share button should be shown
 if (fiddleId && !embedded) {
@@ -146,6 +153,24 @@ function calculateLineNumber(fiddleValue) {
   return newLines.join('\n');
 }
 
+// Saves the libraries when loaded in an array if its not already present
+function saveLibraryLocally(libraryURLs) {
+  libraryURLs.forEach((library) => {
+    if (window.loadedLibraries.indexOf(library) === -1) {
+      window.loadedLibraries.push(library);
+    }
+  });
+}
+
+// Displays the Loaded Libraries
+function updateLoadedLibraries() {
+  let value = '-';
+  if (window.loadedLibraries.length > 0) {
+    value = (libraries.getDisplayNameFromURL(window.loadedLibraries)).join(', ');
+  }
+  window.librariesContent.innerHTML = value;
+}
+
 /* eslint-disable */
 const runFiddle = () => {
   frameBridge.send(MESSAGES.RUN_SCRIPT, calculateLineNumber(fiddle.getValue()));
@@ -165,6 +190,12 @@ const getFiddle = (data) => {
       privateIcon.classList.remove('fa-globe');
       privateIcon.classList.add('fa-lock');
       privateIcon.parentElement.setAttribute('data-balloon', 'Private Fiddle');
+    }
+
+    if (data.libraries && data.libraries.length > 0) {
+      window.loadedLibraries = data.libraries;
+      frameBridge.send(MESSAGES.LOAD_LIBRARY, data.libraries);
+      updateLoadedLibraries();
     }
   } else {
     $.addStyleTo(startFiddle, 'display', 'none');
@@ -277,6 +308,21 @@ if (!embedded) {
       }
 
       fiddle.setValue(code);
+    }
+  };
+
+  // load the selected javascript library
+  window.librariesSelector.onchange = () => {
+    if (window.librariesSelector.value) {
+      const selectedIndex = window.librariesSelector.selectedIndex;
+      const dependecyUrls = libraries.getLibraryDependencyUrls(selectedIndex);
+      if (dependecyUrls) {
+        frameBridge.send(MESSAGES.LOAD_LIBRARY, dependecyUrls);
+        saveLibraryLocally(dependecyUrls);
+      }
+      frameBridge.send(MESSAGES.LOAD_LIBRARY, [window.librariesSelector.value]);
+      saveLibraryLocally([window.librariesSelector.value]);
+      updateLoadedLibraries();
     }
   };
 } // end not embedded
