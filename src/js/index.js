@@ -31,24 +31,12 @@ redirectTraffic.register();
 window.embedded = embedded;
 
 // handle the examples according to ES versions
-console.log('getting element');
-
-window.esVersionSelector = $.getElement('.es-versions');
-console.log(window.esVersionSelector);
-
 ecmaScriptVersions.addVersions();
+const esVersionSelector = $.getElement('.es-versions');
 
-console.log(window.esVersionSelector);
-
-window.esVersionSelector.onchange = () => {
-  console.log('changed');
-  examples.addExamples(window.esVersionSelector.value);
-  console.log(window.esVersionSelector.value);
+esVersionSelector.onchange = () => {
+  examples.addExamples(esVersionSelector.value);
 };
-
-console.log(window.esVersionSelector);
-
-window.exampleSelector = $.getElement('.examples');
 
 // Initialize the libraries that are loaded
 window.loadedLibraries = [];
@@ -297,6 +285,7 @@ if (!embedded) {
   };
 
   // load the selected code
+  window.exampleSelector = $.getElement('.examples');
   window.exampleSelector.onchange = () => {
     if (window.exampleSelector.value) {
       let code = 'Example Can Not Be Found';
